@@ -12,12 +12,10 @@
 (defn first-pos-in-basement
   [input]
   (let [all-steps (map {\( 1 \) -1} input)]
-    (loop [pos 0 sum 0 steps all-steps]
-      (if (= -1 sum)
-        pos
-        (recur (inc pos)
-               (+ sum (first steps))
-               (rest steps))))))
+    (->> (reductions + 0 all-steps)
+         (map-indexed vector)
+         (filter #(= -1 (second %)))
+         ffirst)))
 
 (defn day01-part1-soln
   []
