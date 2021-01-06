@@ -21,6 +21,23 @@
    repeated-char?
    no-invalid-pairs?))
 
+(defn non-overlapping-pair?
+  [s]
+  (some? (re-find #"(\w\w).*\1" s)))
+
+(defn repeat-with-letter-between?
+  [s]
+  (some? (re-find #"(\w)\w\1" s)))
+
+(def new-nice?
+  (every-pred
+   non-overlapping-pair?
+   repeat-with-letter-between?))
+
 (defn day05-part1-soln
   []
   (count (filter nice? day05-input)))
+
+(defn day05-part2-soln
+  []
+  (count (filter new-nice? day05-input)))
