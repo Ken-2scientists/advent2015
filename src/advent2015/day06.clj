@@ -1,6 +1,5 @@
 (ns advent2015.day06
-  (:require [clojure.set :as set]
-            [advent-utils.core :as u]))
+  (:require [advent-utils.core :as u]))
 
 (def pattern #"(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)")
 (def command {"turn on" :on
@@ -21,21 +20,62 @@
   (for [y (range sy (inc ey))
         x (range sx (inc ex))] [x y]))
 
+(defn off
+  [grid pos]
+  (assoc grid pos false))
+
+(defn on
+  [grid pos]
+  (assoc grid pos true))
+
 (defn toggle
-  [grid locs]
-  (let [current-ons (set/intersection locs grid)
-        current-offs (set/difference locs grid)]
-    (->> (set/difference grid current-ons)
-         (set/union current-offs))))
+  [grid pos]
+  (update grid pos not))
+
+(def commands
+  {:on on
+   :off off
+   :toggle toggle})
+
+(defn off2
+  [grid pos]
+  (update grid pos #(if (nil? %)
+                      0
+                      (if (pos? %) (dec %) %))))
+
+(defn on2
+  [grid pos]
+  (update grid pos #(if (nil? %) 1 (inc %))))
+
+(defn toggle2
+  [grid pos]
+  (update grid pos #(if (nil? %) 2 (+ % 2))))
+
+(def commands2
+  {:on on2
+   :off off2
+   :toggle toggle2})
 
 (defn update-grid
-  [grid {:keys [cmd start end]}]
-  (let [locs (set (rect-range start end))]
-    (case cmd
-      :on (set/union grid locs)
-      :off (set/difference grid locs)
-      :toggle (toggle grid locs))))
+  [cmds grid {:keys [cmd start end]}]
+  (let [locs (rect-range start end)
+        update-fn (cmds cmd)]
+    (reduce update-fn grid locs)))
 
+(defn count-on
+  [grid]
+  (count (filter true? (vals grid))))
+
+(defn brightness
+  [grid]
+  (reduce + (filter some? (vals grid))))
+
+(def update-grid-part1 (partial update-grid commands))
 (defn day06-part1-soln
   []
-  (count (reduce update-grid #{} day06-input)))
+  (count-on (reduce update-grid-part1 {} day06-input)))
+
+(def update-grid-part2 (partial update-grid commands2))
+(defn day06-part2-soln
+  []
+  (brightness (reduce update-grid-part2 {} day06-input)))
