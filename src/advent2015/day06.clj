@@ -18,7 +18,7 @@
 (defn rect-range
   [[sx sy] [ex ey]]
   (for [y (range sy (inc ey))
-        x (range sx (inc ex))] [x y]))
+        x (range sx (inc ex))] (str x "," y)))
 
 (defn off
   [grid pos]
