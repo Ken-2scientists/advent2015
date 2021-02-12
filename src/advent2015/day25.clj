@@ -19,7 +19,6 @@
   (let [tier (+ row col -1)]
     (+ (lazy-caterer (dec tier)) (dec col))))
 
-
 (defn next-code
   [num]
   (mod (* num multiplier) modulus))
@@ -27,4 +26,10 @@
 (defn code
   [row col]
   (let [code-num (code-number row col)]
-    (m/mod-mul modulus (m/mod-pow modulus multiplier (dec code-num)) first-code)))
+    (if (= 1 code-num)
+      first-code
+      (m/mod-mul modulus (m/mod-pow modulus multiplier (dec code-num)) first-code))))
+
+(defn day25-part1-soln
+  []
+  (code code-row code-col))
