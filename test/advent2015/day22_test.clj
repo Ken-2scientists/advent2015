@@ -19,8 +19,12 @@
   (testing "Arrives at the correct end state for the sample battles"
     (is (= {:player {:hit-points 2 :mana 24 :armor 0}
             :boss   {:hit-points 0 :damage 8}
-            :effects {}}
-           (reduce t/combat-round day22-sample1 day22-sample1-moves)))))
+            :effects {:poison 3}}
+           (reduce t/combat-round day22-sample1 day22-sample1-moves)))
+    (is (= {:player {:hit-points 1 :mana 114 :armor 0}
+            :boss   {:hit-points -1 :damage 8}
+            :effects {:poison 3}}
+           (reduce t/combat-round day22-sample2 day22-sample2-moves)))))
 
 (deftest day22-part1-soln
   (testing "Reproduces the answer for day22, part1"
