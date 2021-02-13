@@ -98,14 +98,6 @@
    (-> (player-round hard? state spell)
        boss-round)))
 
-(reduce combat-round {:player {:hit-points 10 :mana 250 :armor 0}
-                      :boss   {:hit-points 13 :damage 8}
-                      :effects {}} (take 2 [:poison :magic-missile]))
-
-(reduce combat-round {:player {:hit-points 10 :mana 250 :armor 0}
-                      :boss   {:hit-points 14 :damage 8}
-                      :effects {}} (take 5 [:recharge :shield :drain :poison :magic-missile]))
-
 (defn player-wins?
   [{:keys [player boss]}]
   (and
@@ -114,20 +106,23 @@
 
 (defn available-spells
   [{:keys [player effects]}]
-  (let [active-effects (map first (filter #(> 1 (val %)) effects))]
-    (->> (u/without-keys spell-cost active-effects)
-         (filter #(>= (:mana player) (val %)))
-         (map first))))
-
-(available-spells {:player player :effects {}})
-
+  (if (<= (:hit-points player) 0)
+    []
+    (let [active-effects (map first (filter #(> 1 (val %)) effects))]
+      (->> (u/without-keys spell-cost active-effects)
+           (filter #(>= (:mana player) (val %)))
+           (map first)))))
 
 (def winning-plays [:poison :recharge :shield :poison :recharge :magic-missile :poison :drain :magic-missile])
 (defn day22-part1-soln
   []
   (reduce + (map spell-cost winning-plays)))
 
-; 2252
-(def plays [:shield :recharge :poison :shield :drain :recharge :shield :poison :recharge :shield :drain :recharge :shield :poison :magic-missile :magic-missile])
-(reduce (partial combat-round true) {:player player :boss day22-input :effects {}} plays)
-(reduce + (map spell-cost plays))
+(def winning-plays-part2 [:poison :recharge :shield :poison :recharge :shield :poison :magic-missile :magic-missile])
+
+(defn day22-part2-soln
+  []
+  (reduce + (map spell-cost winning-plays-part2)))
+
+
+
